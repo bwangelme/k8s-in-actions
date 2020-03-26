@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubia-manual
+  namespace: bwangel
+spec:
+  containers:
+    - image: bwangel/kubia:v0.1
+      name: kubiame
+      ports:
+      - containerPort: 8080
+        protocol: TCP
