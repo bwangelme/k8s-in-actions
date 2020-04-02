@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubia-unhealthy
+spec:
+  containers:
+    - image: bwangel/kubia:v0.2
+      name: kubiame
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 8080
