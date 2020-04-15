@@ -1,0 +1,20 @@
+apiVersion: apps/v1beta2
+kind: DaemonSet
+metadata:
+  name: ssd-monitor
+spec:
+  selector:
+    # matchLabels 指定 daemonset 选择 pod 使用的标签
+    matchLabels:
+      app: ssd-monitor
+  template:
+    metadata:
+      labels:
+        app: ssd-monitor
+    spec:
+      # nodeSelector 指定选择节点时使用的标签
+      nodeSelector:
+        disk: ssd
+      containers:
+        - name: main
+          image: luksa/ssd-monitor

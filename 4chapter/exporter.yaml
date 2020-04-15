@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: batch-job
+spec:
+  # 注意，我们没有显示地为 Job 指定 Selector 来让其选择 Pod
+  # Job 将会自动根据 Pod 创建时使用的标签来创建 Selector
+  template:
+    metadata:
+      labels:
+        app: batch-job
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: main
+          image: luksa/batch-job
