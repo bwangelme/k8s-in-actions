@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: batch-job-parallel
+spec:
+  completions: 5  # Pod 运行的总次数
+  parallelism: 2  # 可以同时运行的 Pod 的数量
+  template:
+    metadata:
+      labels:
+        app: batch-job-parallel
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: main
+          image: luksa/batch-job
