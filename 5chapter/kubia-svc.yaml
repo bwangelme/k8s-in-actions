@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubia
+spec:
+  sessionAffinity: ClientIP
+  ports:
+    - port: 80
+      name: http-default
+      targetPort: http-default
+    - port: 90
+      name: http-mux1
+      targetPort: http-mux1
+  selector:
+    app: kubia

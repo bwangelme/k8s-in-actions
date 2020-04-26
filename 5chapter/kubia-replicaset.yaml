@@ -1,0 +1,22 @@
+apiVersion: apps/v1beta2
+kind: ReplicaSet
+metadata:
+  name: kubia
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      labels:
+        app: kubia
+    spec:
+      containers:
+        - name: kubia
+          image: bwangel/kubia:v0.3
+          ports:
+            - name: http-default
+              containerPort: 8080
+            - name: http-mux1
+              containerPort: 8090
