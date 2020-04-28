@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+  # 注意要和绑定的目标服务的名称相同
+  name: external-service
+subsets:
+  - addresses:
+    - ip: 13.250.94.254
+    - ip: 13.229.188.59
+    ports:
+      - port: 80

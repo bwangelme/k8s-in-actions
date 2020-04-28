@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-service-externalname
+spec:
+  type: ExternalName  # 外部服务的别名服务需要制定类型为 ExternalName
+  externalName: httpbin.org
+  ports:
+    - port: 80

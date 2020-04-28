@@ -1,0 +1,8 @@
+# 这个文件只创建了一个服务，但是没有定义选择器，也就没有创建对应的 Endpoint 资源
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-service
+spec:
+  ports:
+    - port: 80
