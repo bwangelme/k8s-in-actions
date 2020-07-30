@@ -13,6 +13,6 @@ spec:
     spec:
       containers:
         - name: kubia
-          image: bwangel/kubia:v0.1
+          image: bwangel/kubia:v0.4
           ports:
             - containerPort: 8080
