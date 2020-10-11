@@ -60,10 +60,12 @@ then
   groupadd docker
 fi
 usermod -aG docker vagrant
+echo '重启Docker'
+systemctl daemon-reload
+systemctl restart docker.service
 
 echo '关闭 Swap'
 swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
-
 
 echo '安装 Kubernetes'
 export HTTP_PROXY='10.8.0.1:8118' HTTPS_PROXY='10.8.0.1:8118'
@@ -78,6 +80,7 @@ apt-mark hold kubelet kubeadm kubectl
 
 echo '启动k8s'
 if [[ $1 == 1 ]];then
+    kubeadm config images pull  # 拉取 k8s 启动所需镜像
     kubeadm init --apiserver-advertise-address 172.17.9.101 --pod-network-cidr=10.244.0.0/16
     KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f /vagrant/k8s-svc/kube-flannel.yml
 fi
@@ -98,5 +101,5 @@ fi
 
 # Then you can join any number of worker nodes by running the following on each as root:
 
-kubeadm join 172.17.9.101:6443 --token 8p1l90.rpdpufdstui9nwvf \
-    --discovery-token-ca-cert-hash sha256:e32c36db0b8ce0cbb88ba6016784f4d0d5e7851978de6f150e84f9337c37b28a
+# kubeadm join 172.17.9.101:6443 --token 8p1l90.rpdpufdstui9nwvf \
+#    --discovery-token-ca-cert-hash sha256:e32c36db0b8ce0cbb88ba6016784f4d0d5e7851978de6f150e84f9337c37b28a
