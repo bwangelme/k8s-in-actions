@@ -5,7 +5,6 @@
 
 
 trap "exit" SIGINT
-INTERNAL=$1
 echo "Configured to generate new fortune every $INTERNAL seconds"
 mkdir -p /var/htdocs
 while :
