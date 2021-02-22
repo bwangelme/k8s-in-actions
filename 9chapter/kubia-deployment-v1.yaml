@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubia
+spec:
+  # 设置 pod ready 的秒数为10，减慢滚动升级的速度
+  minReadySeconds: 10
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      name: kubia
+      labels:
+        app: kubia
+    spec:
+      containers:
+        - image: bwangel/kubia:v0.2
+          name: golang
+
+# ø> k create -f kubia-deployment-v1.yaml --record
+# deployment.apps/kubia created
+# --record 选项表示在 deployment 的 annotation 中记录创建 deployment 的命令
+
+# 在创建 deployment 的过程中，查看 deployment 的状态
+# ø> k rollout status deployment kubia
+# Waiting for deployment "kubia" rollout to finish: 1 out of 3 new replicas have been updated...
+# Waiting for deployment "kubia" rollout to finish: 1 out of 3 new replicas have been updated...
+# Waiting for deployment "kubia" rollout to finish: 1 out of 3 new replicas have been updated...
+# Waiting for deployment "kubia" rollout to finish: 2 out of 3 new replicas have been updated...
+# Waiting for deployment "kubia" rollout to finish: 2 out of 3 new replicas have been updated...
+# Waiting for deployment "kubia" rollout to finish: 2 out of 3 new replicas have been updated...
+# Waiting for deployment "kubia" rollout to finish: 2 out of 3 new replicas have been updated...
+# Waiting for deployment "kubia" rollout to finish: 2 out of 3 new replicas have been updated...
+# Waiting for deployment "kubia" rollout to finish: 1 old replicas are pending termination...
+# Waiting for deployment "kubia" rollout to finish: 1 old replicas are pending termination...
+# Waiting for deployment "kubia" rollout to finish: 1 old replicas are pending termination...
+# deployment "kubia" successfully rolled out
+#
+# 548bb79f8c 是 pod 模版的哈希值
+# 针对不同版本的 pod 模版，deployment 会创建不同哈希值的 rs
+# ø> k get pods --show-labels
+# NAME                     READY   STATUS    RESTARTS   AGE     LABELS
+# kubia-548bb79f8c-6hpsq   1/1     Running   0          3m47s   app=kubia,pod-template-hash=548bb79f8c
+# kubia-548bb79f8c-pbzr2   1/1     Running   0          3m48s   app=kubia,pod-template-hash=548bb79f8c
+# kubia-548bb79f8c-zz7zm   1/1     Running   0          4m17s   app=kubia,pod-template-hash=548bb79f8c
+# ø> k get rs
+# NAME               DESIRED   CURRENT   READY   AGE
+# kubia-548bb79f8c   3         3         3       4m22s
+# kubia-557b7d9f4f   0         0         0       12m
