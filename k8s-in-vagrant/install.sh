@@ -18,13 +18,15 @@ fi
 
 grep 'hostname config for k8s' /etc/hosts
 if [[ $? == 1 ]]; then
-    echo '设置主机名的解析'
-    cat >> /etc/hosts <<EOF
+
+echo '设置主机名的解析'
+cat >> /etc/hosts <<EOF
 # hostname config for k8s
 172.17.9.101 k8s-node1
 172.17.9.102 k8s-node2
 172.17.9.103 k8s-node3
 EOF
+
 fi
 
 echo '安装Docker and k8s'
@@ -49,6 +51,7 @@ echo '锁定 kubelet kubeadm kubectl 的版本'
 apt-mark hold kubelet kubeadm kubectl
 
 echo '设置 Docker 的代理'
+systemctl enable docker
 [[ ! -d "/etc/systemd/system/docker.service.d" ]] && mkdir -p /etc/systemd/system/docker.service.d
 if [[ ! -f "/etc/systemd/system/docker.service.d/http-proxy.conf" ]]; then
 
@@ -61,7 +64,7 @@ EOF
 
 fi
 
-if [[ $1 == 1 ]]; then
+if [[ ! -f "/etc/docker/daemon.json" ]]; then
 
 cat > /etc/docker/daemon.json <<EOF
 {
@@ -94,9 +97,16 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 
 # echo '启动k8s'
 # if [[ $1 == 1 ]];then
-#     kubeadm config images pull  # 拉取 k8s 启动所需镜像
+#     sudo kubeadm config images pull  # 拉取 k8s 启动所需镜像
 #     sudo kubeadm init --apiserver-advertise-address 172.17.9.101  --pod-network-cidr=172.16.0.0/16 --service-cidr 172.15.0.0/16
-#     KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f /vagrant/k8s-svc/kube-flannel.yml
 # fi
 
+# echo '安装网络插件'
+# url="https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+# k apply -f conf/weave.yaml
+
+# echo '安装 dashboard'
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
+# echo '创建用户'
+# https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md#creating-sample-user
 
