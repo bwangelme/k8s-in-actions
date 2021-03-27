@@ -22,9 +22,9 @@ if [[ $? == 1 ]]; then
 echo '设置主机名的解析'
 cat >> /etc/hosts <<EOF
 # hostname config for k8s
-172.17.9.101 k8s-node1
-172.17.9.102 k8s-node2
-172.17.9.103 k8s-node3
+172.18.0.101 k8s-node1
+172.18.0.102 k8s-node2
+172.18.0.103 k8s-node3
 EOF
 
 fi
@@ -79,7 +79,6 @@ EOF
 
 fi
 
-
 echo '创建 Docker 用户组'
 egrep "^docker" /etc/group >& /dev/null
 if [ $? -ne 0 ]
@@ -94,11 +93,12 @@ systemctl restart docker.service
 echo '关闭 Swap'
 swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 
+echo '拉取 k8s 启动所需镜像'
+kubeadm config images pull
 
 # echo '启动k8s'
 # if [[ $1 == 1 ]];then
-#     sudo kubeadm config images pull  # 拉取 k8s 启动所需镜像
-#     sudo kubeadm init --apiserver-advertise-address 172.17.9.101  --pod-network-cidr=172.16.0.0/16 --service-cidr 172.15.0.0/16
+#     sudo kubeadm init --apiserver-advertise-address 172.18.0.101  --pod-network-cidr=172.16.0.0/16 --service-cidr 172.15.0.0/16
 # fi
 
 # echo '安装网络插件'
