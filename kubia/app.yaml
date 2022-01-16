@@ -1,0 +1,9 @@
+appname: kubia
+image: bwangel/qae_kubia_2021_12_02_1339:latest
+config:
+  - local: config/store-production.yaml
+    remote: config/store.yaml
+tasks:
+  - type: web
+    name: default
+    url: /

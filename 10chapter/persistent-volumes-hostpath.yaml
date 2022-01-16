@@ -1,0 +1,39 @@
+kind: List
+apiVersion: v1
+items:
+  - apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: pv-a
+    spec:
+      capacity:
+        storage: 100Mi
+      accessModes:
+        - ReadWriteOnce
+      persistentVolumeReclaimPolicy: Recycle
+      hostPath:
+        path: /var/volumes/pv-a
+  - apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: pv-b
+    spec:
+      capacity:
+        storage: 100Mi
+      accessModes:
+        - ReadWriteOnce
+      persistentVolumeReclaimPolicy: Recycle
+      hostPath:
+        path: /var/volumes/pv-b
+  - apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: pv-c
+    spec:
+      capacity:
+        storage: 100Mi
+      accessModes:
+        - ReadWriteOnce
+      persistentVolumeReclaimPolicy: Recycle
+      hostPath:
+        path: /var/volumes/pv-c
