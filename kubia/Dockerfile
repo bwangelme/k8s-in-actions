@@ -17,3 +17,4 @@ FROM ${base}
 ARG app
 
 COPY --from=builder /code/${app} /go/bin
+ENTRYPOINT /go/bin/kubia

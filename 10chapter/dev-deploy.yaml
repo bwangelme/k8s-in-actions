@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev
+spec:
+  selector:
+    matchLabels:
+      app: dev
+  replicas: 1
+  template:
+    metadata:
+      name: dev
+      labels:
+        app: dev
+    spec:
+      containers:
+        - image: bwangel/dev:v0.4
+          name: dev
+          ports:
+            - containerPort: 8081
+              name: http
