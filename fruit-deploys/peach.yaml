@@ -1,38 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: apple-app
-  namespace: qae-stage
+  name: peach-app
+  namespace: qae
   labels:
-    app: apple
+    app: peach
 spec:
   replicas: 1
   template:
     metadata:
-      name: apple-app
+      name: peach-app
       labels:
-        app: apple
+        app: peach
     spec:
       containers:
-        - name: apple-app
+        - name: peach-app
           image: hashicorp/http-echo
           args:
-            - "-text=apple-stage"
+            - "-text=peach"
           imagePullPolicy: IfNotPresent
       restartPolicy: Always
   selector:
     matchLabels:
-      app: apple
+      app: peach
 
 ---
 
 kind: Service
 apiVersion: v1
 metadata:
-  name: apple-service
-  namespace: qae-stage
+  name: peach-service
+  namespace: qae
 spec:
   selector:
-    app: apple
+    app: peach
   ports:
-    - port: 5678 # Default port for image
+    - targetPort: 5678
+      port: 8000 # Default port for image

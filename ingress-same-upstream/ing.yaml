@@ -1,0 +1,68 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fruit-ing
+  namespace: qae
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Request-Id: $req_id";
+      more_set_headers "X-QAE: NORMAL";
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: fruit.bwangel.me
+      http:
+        paths:
+          - backend:
+              service:
+                name: apple-service
+                port:
+                  number: 8000
+            path: /
+            pathType: ImplementationSpecific
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: peach-ing
+  namespace: qae
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Request-Id: $req_id";
+      more_set_headers "X-QAE: NORMAL";
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: peach.bwangel.me
+      http:
+        paths:
+          - backend:
+              service:
+                name: peach-service
+                port:
+                  number: 8000
+            path: /
+            pathType: ImplementationSpecific
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apple-ing
+  namespace: qae
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Request-Id: $req_id";
+      more_set_headers "X-QAE: NORMAL";
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: apple.bwangel.me
+      http:
+        paths:
+          - backend:
+              service:
+                name: apple-service
+                port:
+                  number: 8000
+            path: /
+            pathType: ImplementationSpecific

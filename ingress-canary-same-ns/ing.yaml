@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: banana-ing
+  namespace: qae
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-header: "X-QAE-CANARY"
+    # canary ingress 中，非 canary 的配置不生效,但有少数特例
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-QAE: CANARY";
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: fruit.bwangel.me
+      http:
+        paths:
+          - backend:
+              service:
+                name: banana-service
+                port:
+                  number: 8000
+            path: /
+            pathType: ImplementationSpecific
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apple-ing
+  namespace: qae
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Request-Id: $req_id";
+      more_set_headers "X-QAE: NORMAL";
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: fruit.bwangel.me
+      http:
+        paths:
+          - backend:
+              service:
+                name: apple-service
+                port:
+                  number: 8000
+            path: /
+            pathType: ImplementationSpecific
