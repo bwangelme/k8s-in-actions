@@ -58,6 +58,8 @@ NGINX Ingress controller
 
 在 1.1.0 版本的 ingress 中发现了这样的一行日志
 
+```shell
 2871:W0914 08:39:18.921819       7 controller.go:1517] alternative upstream xxxx in Ingress xxxxx is primary upstream in Other Ingress for location xxxxx/!
+```
 
 这说明 canary 模式的的 ingress, 它的 upstream 必须是独有的。
