@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apple-app
+  namespace: qae-stage
+  labels:
+    app: apple
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: apple-app
+      labels:
+        app: apple
+    spec:
+      containers:
+        - name: apple-app
+          image: hashicorp/http-echo
+          args:
+            - "-text=apple-stage"
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: apple
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: apple-service
+  namespace: qae-stage
+spec:
+  selector:
+    app: apple
+  ports:
+    - port: 5678 # Default port for image
