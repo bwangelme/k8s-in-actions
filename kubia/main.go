@@ -1,20 +1,34 @@
 package main
 
 import (
+	"context"
+	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/bwangelme/kubia/version"
+)
+
+var (
+	listenFlag    = flag.String("listen", ":5678", "address and port to listen")
+	textFlag      = flag.String("text", "", "text to put on the webpage")
+	versionFlag   = flag.Bool("version", false, "display version information")
+	startSlowFlag = flag.Bool("slow", false, "start slow")
 )
 
 const filePath = "/var/data/kubia.txt"
 
-func Home(w http.ResponseWriter, r *http.Request) {
+func httpEcho(v string) http.HandlerFunc {
 	hostname, _ := os.Hostname()
-	fmt.Fprintf(w, "You've hit %s v2\n", hostname)
-	return
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "%v on %v\n", v, hostname)
+	}
 }
 
 func Storage(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +57,7 @@ func Storage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content, err := ioutil.ReadFile(filePath)
+	content, err := os.ReadFile(filePath)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Read file error %v", err)
@@ -54,8 +68,77 @@ func Storage(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func httpHealth() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, `{"status":"ok"}`)
+	}
+}
+
+const (
+	httpHeaderAppName    string = "X-App-Name"
+	httpHeaderAppVersion string = "X-App-Version"
+)
+
+// withAppHeaders adds application headers such as X-App-Version and X-App-Name.
+func withAppHeaders(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set(httpHeaderAppName, version.Name)
+		w.Header().Set(httpHeaderAppVersion, version.Version)
+		h(w, r)
+	}
+}
+
 func main() {
-	http.HandleFunc("/", Home)
-	http.HandleFunc("/storage", Storage)
-	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
+	flag.Parse()
+
+	// Asking for the version?
+	if *versionFlag {
+		fmt.Fprintln(os.Stderr, version.HumanVersion)
+		os.Exit(0)
+	}
+
+	// Validation
+	if *textFlag == "" {
+		fmt.Fprintln(os.Stderr, "Missing -text option!")
+		os.Exit(127)
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", withAppHeaders(httpEcho(*textFlag)))
+	mux.HandleFunc("/health", withAppHeaders(httpHealth()))
+	mux.HandleFunc("/storage", Storage)
+
+	server := &http.Server{
+		Addr:    *listenFlag,
+		Handler: mux,
+	}
+
+	if *startSlowFlag {
+		time.Sleep(30 * time.Second)
+	}
+
+	serverCh := make(chan struct{})
+	go func() {
+		log.Printf("[INFO] server is listening on %s\n", *listenFlag)
+		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+			log.Fatalf("[ERR] server exited with: %s", err)
+		}
+		close(serverCh)
+	}()
+
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, syscall.SIGINT, syscall.SIGTERM)
+
+	// Wait for interrupt
+	<-signalCh
+
+	log.Printf("[INFO] received interrupt, shutting down...")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf("[ERR] failed to shutdown server: %s", err)
+	}
+
+	os.Exit(0)
 }

@@ -1,20 +1,16 @@
 # docker build -t bwangel/qae_kubia_$(date +%Y_%m_%d_%H%M) --build-arg app=kubia .
 
-ARG build_base=golang:1.17
-ARG base=golang:1.17
+ARG build_base=golang:1.18
+ARG base=golang:1.18
 
 FROM ${build_base} as builder
-
-ARG app
 
 RUN mkdir /code
 WORKDIR /code
 COPY . /code
-RUN go build -o ${app} .
+RUN go build -o kubia .
 
 FROM ${base}
 
-ARG app
-
-COPY --from=builder /code/${app} /go/bin
+COPY --from=builder /code/kubia /go/bin
 ENTRYPOINT /go/bin/kubia
