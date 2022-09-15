@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slow-banana-app
+  namespace: qae
+  labels:
+    app: slow-banana
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: slow-banana-app
+      labels:
+        app: slow-banana
+    spec:
+      containers:
+        - name: slow-banana-app
+          image: bwangel/echo
+          resources:
+            limits:
+              memory: 300M
+            requests:
+              cpu: 100m
+              memory: 300M
+          command:
+            - "http_echo"
+          args:
+            - "-slow"
+            - "-text=slow-banana"
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              port: 5678
+              path: /health
+            periodSeconds: 5
+            timeoutSeconds: 60
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: slow-banana
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: slow-banana-service
+  namespace: qae
+spec:
+  selector:
+    app: slow-banana
+  ports:
+    - targetPort: 5678
+      port: 8000 # Default port for image

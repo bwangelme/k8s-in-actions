@@ -31,3 +31,12 @@ X-QAE: NORMAL
 banana
 
 ```
+
+使用一个启动很慢的 pod，来当 canary 的后端，在 ingress-controller 的 pod 日志中能够看到 `Service "qae/slow-banana-service" does not have any active Endpoint.`,等 pod 启动后，canary ingress 又能够正常访问了。
+
+```shell
+W0915 07:02:53.418121       7 controller.go:1111] Service "qae/slow-banana-service" does not have any active Endpoint.
+2022/09/15 07:03:09 [error] 1482#1482: *2875389 [lua] balancer.lua:203: route_to_alternative_balancer(): no alternative balancer for backend: qae-slow-banana-service-8000, client: 192.168.56.1, server: fruit.bwangel.me, request: "GET / HTTP/1.0", host: "fruit.bwangel.me"
+192.168.56.1 - - [15/Sep/2022:07:03:09 +0000] "GET / HTTP/1.0" 200 6 "-" "HTTPie/3.2.1" 158 0.001 [qae-apple-service-8000] [] 10.244.107.202:5678 6 0.000 200 012094e7180a838d68728cb277528284
+192.168.56.1 - - [15/Sep/2022:07:03:35 +0000] "GET / HTTP/1.0" 200 48 "-" "HTTPie/3.2.1" 158 0.000 [qae-apple-service-8000] [qae-slow-banana-service-8000] 10.244.107.218:5678 48 0.000 200 aa87bdaac8624b6712f2987be7d189af
+```

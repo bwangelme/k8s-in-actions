@@ -15,10 +15,12 @@ spec:
     spec:
       containers:
         - name: apple-app
-          image: hashicorp/http-echo
+          image: bwangel/echo
+          command:
+            - "http_echo"
           args:
             - "-text=apple"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
       restartPolicy: Always
   selector:
     matchLabels:

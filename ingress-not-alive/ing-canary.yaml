@@ -14,7 +14,7 @@ spec:
         paths:
           - backend:
               service:
-                name: banana-service
+                name: slow-banana-service
                 port:
                   number: 8000
             path: /
