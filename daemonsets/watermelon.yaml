@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    name: fruit-ds
+  name: watermelon
+  namespace: qae
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: watermelon
+  template:
+    metadata:
+      annotations:
+        bwangel.me/restart: restart by bwangel 2022年 11月 04日 星期五 17:56:03 CST
+      labels:
+        name: watermelon
+    spec:
+      containers:
+        - name: watermelon
+          image: bwangel/echo:latest
+          command:
+            - "http_echo"
+          args:
+            - "-text=watermelon"
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 200Mi
+            requests:
+              cpu: "0.2"
+              memory: 100Mi
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: { }
+      terminationGracePeriodSeconds: 30
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 10
+    type: RollingUpdate
