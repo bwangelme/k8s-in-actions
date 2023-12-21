@@ -1,0 +1,65 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apple-ing
+  namespace: qae
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: fruit.bwangel.me
+    http:
+      paths:
+      - backend:
+          service:
+            name: apple-service
+            port:
+              number: 8000
+        path: /api/v2/erebor/.*
+        pathType: ImplementationSpecific
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apple-ing-0
+  namespace: qae
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: fruit.bwangel.me
+      http:
+        paths:
+          - backend:
+              service:
+                name: apple-service
+                port:
+                  number: 8000
+            path: /api/v2/(movie|tv|book|music)/\d+/ad
+            pathType: ImplementationSpecific
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apple-ing
+  namespace: qae-stage
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "0"
+    nginx.ingress.kubernetes.io/canary-by-header: "X-QAE-CANARY"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: fruit.bwangel.me
+      http:
+        paths:
+          - backend:
+              service:
+                name: apple-service
+                port:
+                  number: 8000
+            path: /api/v2/erebor/.*
+            pathType: ImplementationSpecific
