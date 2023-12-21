@@ -1,6 +1,6 @@
 # docker build -t bwangel/echo:latest .
 
-ARG build_base=golang:1.18
+ARG build_base=golang:1.20
 ARG base=alpine
 
 FROM ${build_base} as builder

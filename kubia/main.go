@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -27,7 +28,13 @@ const filePath = "/var/data/kubia.txt"
 func httpEcho(v string) http.HandlerFunc {
 	hostname, _ := os.Hostname()
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "%v on %v\n", v, hostname)
+		content := map[string]string{
+			"path":     r.RequestURI,
+			"hostname": hostname,
+			"inst":     v,
+		}
+		e := json.NewEncoder(w)
+		e.Encode(content)
 	}
 }
 
