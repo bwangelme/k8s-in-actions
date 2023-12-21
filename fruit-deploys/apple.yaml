@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: apple-app
-          image: bwangel/echo
+          image: bwangel/kubia
           command:
             - "http_echo"
           args:

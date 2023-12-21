@@ -13,3 +13,4 @@ RUN CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -o http_echo .
 FROM ${base}
 
 COPY --from=builder /code/http_echo /bin
+ENTRYPOINT ["http_echo", "-text=strawberry"]
