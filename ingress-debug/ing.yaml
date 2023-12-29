@@ -61,5 +61,5 @@ spec:
                 name: apple-service
                 port:
                   number: 8000
-            path: /api/v2/erebor/.*
+            path: /api/v2/erebor
             pathType: ImplementationSpecific
